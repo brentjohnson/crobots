@@ -60,7 +60,7 @@ static int col_3;    /* column for cpu cycle count*/
 
 /* init_disp - initialize display */
 
-init_disp()
+void init_disp()
 {
     initscr();
     clear();
@@ -73,7 +73,7 @@ init_disp()
 
 /* end_disp - cleanup and end display */
 
-end_disp()
+void end_disp()
 {
     nocrmode();
     echo();
@@ -355,9 +355,7 @@ int n;
 }
 
 
-show_cycle(l)
-
-long l;
+void show_cycle(long l)
 {
     move(LINES-1,col_3);
     printw("%7ld",l);

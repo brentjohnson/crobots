@@ -13,14 +13,18 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 /* INIT causes externals in crobots.h to have storage, & init intrinsic table */
 #define INIT 1
 #include "crobots.h"
+#include "compiler.h"
 
 #ifdef UNIX
 #include <signal.h>
-extern int catch_int();
+void catch_int(int);
 #endif
 #ifdef LATTICE
 int _stack = 6000;  /* Lattice C: give more stack than default of 2048 */
@@ -35,9 +39,16 @@ char *copyright = "Copyright 1985 by Tom Poindexter, All rights reserved.\n";
 
 extern FILE *yyin;
 
-main(argc,argv)
-int argc;
-char *argv[];
+void init_robot(int);
+void comp(char **, int);
+void play(char **, int);
+void match(int, long, char **, int);
+void rand_pos(int);
+void trace(char *);
+void free_robot(int);
+void yyparse();
+
+int main(int argc, char **argv)
 {
     long limit = CYCLE_LIMIT;
     int matches = 0;
@@ -47,19 +58,15 @@ char *argv[];
     int num_robots = 0;
     char *files[MAXROBOTS];
     char *prog;
-    char *strrchr();   /* this is rindex in some compilers */
     unsigned seed;
-    long time();
-    long atol();
     long cur_time;
-    int srand();
 
 
     /* print version, copyright notice, GPL notice */
 
     fprintf(stderr,"\n");
-    fprintf(stderr,version);
-    fprintf(stderr,copyright);
+    fputs(version, stderr);
+    fputs(copyright, stderr);
     fprintf(stderr,"\n     CROBOTS - fighting robots C compiler and virtual computer\n");
     fprintf(stderr,"       distributed under the GNU GPL, version 2.\n");
     fprintf(stderr,"\n");
@@ -191,10 +198,7 @@ char *argv[];
 
 /* comp - only compile the files with full info */
 
-comp(f,n)
-
-char *f[];
-int n;
+void comp(char **f, int n)
 {
     int i;
 
@@ -230,10 +234,7 @@ int n;
 
 /* play - watch the robots compete */
 
-play(f,n)
-
-char *f[];
-int n;
+void play(char **f, int n)
 {
     int num_robots = 0;
     int robotsleft;
@@ -373,12 +374,7 @@ int n;
 
 /* match - run a series of matches */
 
-match(m,l,f,n)
-
-int m;
-long l;
-char *f[];
-int n;
+void match(int m, long l, char **f, int n)
 {
     int num_robots = 0;
     int robotsleft;
@@ -547,9 +543,7 @@ int n;
 /*           dependent on MAXROBOTS <= 4 */
 /*            put robots in separate quadrant */
 
-rand_pos(n)
-
-int n;
+void rand_pos(int n)
 {
     int i, k;
     int quad[4];
@@ -581,9 +575,7 @@ int n;
 
 /* trace - compile and run the robot in debug mode */
 
-trace(f)
-
-char *f;
+void trace(char *f)
 {
     int c = 1;
 
@@ -635,9 +627,7 @@ char *f;
 
 
 /* init a robot */
-init_robot(i)
-
-int i;
+void init_robot(int i)
 {
     register int j;
 
@@ -672,9 +662,7 @@ int i;
 
 /* free_robot - frees any allocated storage in a robot */
 
-free_robot(i)
-
-int i;
+void free_robot(int i)
 {
     struct func *temp;
 
@@ -702,11 +690,10 @@ int i;
 #ifdef UNIX
 /* catch_int - catch the interrupt signal and die, cleaning screen */
 
-catch_int()
+void catch_int(int s)
 {
     int i;
-    /*
-      for (i = 0; i < MAXROBOTS; i++) {
+     for (i = 0; i < MAXROBOTS; i++) {
         cur_robot = &robots[i];
           printf("\nrobot: %d",i);
           printf("\tstatus......%d",cur_robot->status);
@@ -730,7 +717,7 @@ catch_int()
           printf("\tmiss[1]dist.%5d",missiles[cur_robot-&robots[0]][1].curr_dist);
           printf("\n\n");
       }
-    */
+
     if (!r_debug)
         end_disp();
     exit(0);
@@ -741,8 +728,7 @@ catch_int()
 
 /* not quite the unix time() function, but gets the job done */
 
-long time(x)
-long *x;
+long time(long *x)
 {
     struct {
         short ax,bx,cx,dx,si,di;

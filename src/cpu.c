@@ -15,12 +15,13 @@
 #include "crobots.h"
 #include "tokens.h"
 
+void binaryop(int);
+void dumpvar(long *, int);
+
 /* push - basic stack push mechanism */
 /*         depends on cur_robot, set r_flag on overflow */
 
-long push(k)
-
-long k;
+long push(long k)
 {
     /* increment stack and check for collistion into return ptrs */
     if (++cur_robot->stackptr == cur_robot->retptr) {
@@ -54,7 +55,7 @@ long pop()
 /* any errors (stack collision, missing functions, etc) cause the 'main' */
 /* function to be restarted, with a clean stack; signal by r_flag = 1 */
 
-cycle()
+void cycle()
 {
     int j;
     int c;
@@ -65,9 +66,6 @@ cycle()
     register char *n;
     struct instr **i;
     long **l;
-    long push();
-    long pop();
-
 
     cur_instr = cur_robot->ip;
 
@@ -325,9 +323,7 @@ cycle()
 /* binaryop - pops 2 operands, performs operation, pushes result */
 /*            divide by zero handled by returning 0 */
 
-binaryop(op)
-
-int op;
+void binaryop(int op)
 {
     long x,y;
 
@@ -485,9 +481,7 @@ int op;
 
 /* robot_go - start the robot pointed to by r */
 
-robot_go(r)
-
-struct robot *r;
+void robot_go(struct robot *r)
 {
     register struct func *f;
     register int i;
@@ -510,10 +504,7 @@ struct robot *r;
 
 /* dumpvar - dump a variable pool or stack for length size */
 
-dumpvar(pool,size)
-
-long *pool;
-int size;
+void dumpvar(long *pool, int size)
 {
     register int i;
 

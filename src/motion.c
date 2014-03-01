@@ -118,9 +118,7 @@ long trig_tbl[91] = {
 
 /* sin look up */
 
-long lsin(deg)
-
-int deg;
+long lsin(int deg)
 {
     deg = deg % 360;
     if (deg < 0)
@@ -144,9 +142,7 @@ int deg;
 
 /* cos look up */
 
-long lcos(deg)
-
-int deg;
+long lcos(int deg)
 {
     deg = deg % 360;
     if (deg < 0)
@@ -182,8 +178,7 @@ struct {
 /* move_robots - update the postion of all robots */
 /*               parm 'displ' controls call to field display */
 
-move_robots(displ)
-int displ;
+void move_robots(int displ)
 {
     register int i, n;
     long lsin(), lcos();
@@ -293,8 +288,7 @@ int displ;
 /* move_miss - updates all missile positions */
 /*             parm 'displ' control display */
 
-move_miss(displ)
-int displ;
+void move_miss(int displ)
 {
     register int r, i;
     int n, j;

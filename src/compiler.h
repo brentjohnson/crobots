@@ -95,6 +95,9 @@ struct func *new;	/* current function header */
 
 void dumpoff(char *);
 void decinstr(struct instr *);
+void init_comp();
+int reset_comp();
+
 
 
 /* end of compiler.h */

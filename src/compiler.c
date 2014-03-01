@@ -41,7 +41,7 @@ char *malloc();
 /* init_comp - initializes the compiler for one file */
 /* assumes robot structure allocated and pointed to by cur->robot */
 
-init_comp()
+void init_comp()
 {
     register int i;
 
@@ -98,7 +98,7 @@ init_comp()
 /* reset_comp - resets the compiler for another file */
 /* completes the robot structure */
 
-reset_comp()
+int reset_comp()
 {
     int i, j;
     int found = 0;

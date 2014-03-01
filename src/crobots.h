@@ -202,4 +202,15 @@ struct intrin {
 #endif
 ;
 
+void cycle();
+void robot_go(struct robot *);
+void move_miss(int);
+void move_robots(int);
+void update_disp();
+void init_disp();
+void end_disp();
+void show_cycle(long);
+void count_miss(int, int);
+
+
 /* end of crobots.h header */
