@@ -33,6 +33,7 @@ FILE *f_out;
 char *version   = "CROBOTS - version 1.1, December, 1985\n";
 char *copyright = "Copyright 1985 by Tom Poindexter, All rights reserved.\n";
 
+extern FILE *yyin;
 
 main(argc,argv)
 int argc;
@@ -208,6 +209,7 @@ int n;
     r_flag = 0;
     cur_robot = &robots[i];
     init_comp();	/* initialize the compiler */
+    yyin = f_in;
     yyparse();		/* start compiling */
     reset_comp();	/* reset compiler and complete robot */
     fclose(f_in);
@@ -254,6 +256,7 @@ int n;
     cur_robot = &robots[num_robots];
 
     init_comp();	/* initialize the compiler */
+    yyin = f_in;
     yyparse();		/* start compiling */
     reset_comp();	/* reset compiler and complete robot */
     fclose(f_in);
@@ -614,7 +617,7 @@ char *f;
 
   cur_robot = &robots[0];
 
-  fprintf("\n\nReady to debug, use `d' to dump robot info, `q' to quit.\n\n");
+  printf("\n\nReady to debug, use `d' to dump robot info, `q' to quit.\n\n");
 
   while (c) {  
     cycle();

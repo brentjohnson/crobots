@@ -375,6 +375,7 @@ char *pool;
 
 /* dumpoff - print a table of names and offsets in a symbol pool */
 
+void
 dumpoff(pool)
 
 char *pool;
@@ -699,6 +700,7 @@ struct instr *code;
 
 /* decinstr - print one instruct; watch out for pointer to long conversion! */
 
+void
 decinstr(code)
 
 struct instr *code;

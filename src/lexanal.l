@@ -19,8 +19,8 @@ L			[a-zA-Z_]
 #include "compiler.h"
 
 /* redefine i/o */
-#undef 	input
-#define	input()  	lexgetc()
+#undef 	crinput
+#define	crinput()  	lexgetc()
 #undef 	unput
 #define	unput(c) 	lexungetc(c)
 #undef 	output   

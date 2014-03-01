@@ -132,7 +132,7 @@ long c_cannon()
   else
     if (distance < 0L) {
       push(1L);
-      return;
+      return 0L;
     }
   degree = pop();
   if (degree < 0L)
@@ -150,7 +150,7 @@ long c_cannon()
     if (r_debug)
       printf("reloading: %d\n",cur_robot->reload);
     push(0L);
-    return;
+    return 0L;
   }
 
   /* fire cannon, if one of two missiles are available */
@@ -170,7 +170,7 @@ long c_cannon()
       missiles[r][i].curr_dist = 0;
       missiles[r][i].count = EXP_COUNT;
       push(1L);  
-      return;
+      return 0L;
     }
   }
 

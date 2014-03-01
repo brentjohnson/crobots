@@ -16,7 +16,7 @@
 #define MAXSYM    64    /* maximum number of symbol table entries per pool */
 #define NESTLEVEL 16	/* maximum nest level for ifs, whiles, and fcalls */
 
-extern char yytext[];	/* from lexical analyzer */
+extern char *yytext;	/* from lexical analyzer */
 
 extern FILE *f_in,	/* the comiler input source file */
             *f_out;	/* the compiler diagnostic file, assumed opened */
@@ -92,5 +92,9 @@ int  func_off,		/* function stack offset */
 extern
 #endif
 struct func *new;	/* current function header */
+
+void dumpoff(char *);
+void decinstr(struct instr *);
+
 
 /* end of compiler.h */

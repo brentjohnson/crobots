@@ -10,8 +10,8 @@ DOSA = main.c grammar.c lexanal.c compiler.c cpu.c intrins.c display.c screena.c
 
 # Xenix cc flags: optimize(O), omit stack checking(K), separate text and data(i)
 
-CFLAGS = -O -K -i -DUNIX
-LIBS = -lm -lcurses -ltermlib
+CFLAGS = -g -DUNIX
+LIBS = -lm -lcurses
 
 # note - grammar.c and lexanal.c: both yacc (grammar.y) and lex (lexanal.l)
 #  place '# line' and/or '# ifdef' that sometimes choke the PC-DOS compiler,
@@ -21,7 +21,7 @@ LIBS = -lm -lcurses -ltermlib
 #  confused when '#ifdef symbol .... #endif' are nested.
 
 crobots: 	$(OBJS)
-		cc -s $(CFLAGS) $(OBJS) -o crobots $(LIBS)
+		cc $(CFLAGS) $(OBJS) -o crobots $(LIBS)
 
 main.o: 	crobots.h main.c
 		cc $(CFLAGS) -c main.c
@@ -70,4 +70,7 @@ print:
 lint:
 		lint -abc *.c | tee crobots.lint
 		@echo 'lint output kept in crobots.lint'
+
+clean:
+		rm -f *.o grammar.c lexanal.c tokens.h crobots
 

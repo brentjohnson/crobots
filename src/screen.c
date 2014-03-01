@@ -242,6 +242,7 @@ int n;
 
 /* plot_exp - plot the missile exploding */
 
+void
 plot_exp(r,n)
 
 int r;
