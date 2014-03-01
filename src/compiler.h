@@ -19,7 +19,7 @@
 extern char *yytext;	/* from lexical analyzer */
 
 extern FILE *f_in,	/* the comiler input source file */
-            *f_out;	/* the compiler diagnostic file, assumed opened */
+       *f_out;	/* the compiler diagnostic file, assumed opened */
 
 #ifndef EXT
 extern
@@ -31,7 +31,7 @@ char last_ident[ILEN],	/* last identifier recognized */
 extern
 #endif
 struct instr *last_ins,	/* last instruction compiled */
-             *instruct;	/* current instruction */
+        *instruct;	/* current instruction */
 
 #ifndef EXT
 extern
@@ -53,8 +53,8 @@ int num_parm,		/* number of parameters in a function definition */
 extern
 #endif
 struct fix_if {
-  struct instr *fix_true; /* where true branches around else */
-  struct instr *fix_false;/* where if-false goes to */
+    struct instr *fix_true; /* where true branches around else */
+    struct instr *fix_false;/* where if-false goes to */
 } *ifs;
 
 
@@ -62,8 +62,8 @@ struct fix_if {
 extern
 #endif
 struct fix_while {
-  struct instr *loop;	/* where end-of-while should loop to */
-  struct instr *fix_br;	/* where while expr should branch on false */
+    struct instr *loop;	/* where end-of-while should loop to */
+    struct instr *fix_br;	/* where while expr should branch on false */
 } *whiles;
 
 
