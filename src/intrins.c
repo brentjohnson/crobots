@@ -13,6 +13,8 @@
 /* degree directions assumed: 0 = east; 90 = north; 180 = west; 270 = south */
 /* 0,0 = lower left, max_x,max_y = upper right; i.e., quadrant 1 */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "crobots.h"
 #include "math.h"
 
@@ -109,8 +111,7 @@ long c_scan()
         }
     }
 
-    push((long) close_dist);
-
+    return push((long) close_dist);
 }
 
 /* c_cannon - fire a shot */
@@ -172,8 +173,7 @@ long c_cannon()
         }
     }
 
-    push(0L);
-
+    return push(0L);
 }
 
 
@@ -203,7 +203,7 @@ long c_drive()
     cur_robot->d_heading = (int) degree;
     cur_robot->d_speed = (int) speed;
 
-    push(1L);
+    return push(1L);
 }
 
 
@@ -211,7 +211,7 @@ long c_drive()
 
 long c_damage()
 {
-    push((long) cur_robot->damage);
+    return push((long) cur_robot->damage);
 }
 
 
@@ -219,7 +219,7 @@ long c_damage()
 
 long c_speed()
 {
-    push((long) cur_robot->speed);
+    return push((long) cur_robot->speed);
 }
 
 
@@ -227,7 +227,7 @@ long c_speed()
 
 long c_loc_x()
 {
-    push((long) cur_robot->x / CLICK);
+    return push((long) cur_robot->x / CLICK);
 }
 
 
@@ -235,8 +235,7 @@ long c_loc_x()
 
 long c_loc_y()
 {
-    int y;
-    push((long) cur_robot->y / CLICK);
+    return push((long) cur_robot->y / CLICK);
 }
 
 
@@ -245,16 +244,14 @@ long c_loc_y()
 
 long c_rand()
 {
-    int rand();
-    int srand(); 	/* should be seeded elsewhere */
     long limit;
 
     limit = pop();
 
     if (limit <= 0L)
-        push(0L);
-    else
-        push((long) ((long)(rand()) % limit));
+        limit = 0L;
+
+    return push((long)(rand() % limit));
 }
 
 
@@ -264,12 +261,11 @@ long c_rand()
 long c_sin()
 {
     long degree;
-    long lsin();
 
     degree = pop() % 360L;
     degree = (long) lsin(degree);
 
-    push(degree);
+    return push(degree);
 }
 
 
@@ -279,12 +275,11 @@ long c_sin()
 long c_cos()
 {
     long degree;
-    long lcos();
 
     degree = pop() % 360L;
     degree = (long) lcos(degree);
 
-    push(degree);
+    return push(degree);
 }
 
 
@@ -298,7 +293,7 @@ long c_tan()
     degree = pop() % 360L;
     degree = (long) (tan((double) degree / RAD_DEG) * SCALE);
 
-    push(degree);
+    return push(degree);
 }
 
 
@@ -313,7 +308,7 @@ long c_atan()
     ratio = pop();
     degree = (long) (atan((double) ratio / SCALE) * RAD_DEG);
 
-    push(degree);
+    return push(degree);
 }
 
 
@@ -332,7 +327,7 @@ long c_sqrt()
 
     x = (long) (sqrt((double) x));
 
-    push(x);
+    return push(x);
 }
 
 

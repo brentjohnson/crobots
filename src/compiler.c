@@ -34,10 +34,6 @@ char *s;
     fprintf(f_out,"** Error ** %s",s);
 }
 
-
-char *malloc();
-
-
 /* init_comp - initializes the compiler for one file */
 /* assumes robot structure allocated and pointed to by cur->robot */
 

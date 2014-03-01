@@ -211,6 +211,8 @@ void init_disp();
 void end_disp();
 void show_cycle(long);
 void count_miss(int, int);
-
+void robot_stat(int);
+long lcos(int);
+long lsin(int);
 
 /* end of crobots.h header */
