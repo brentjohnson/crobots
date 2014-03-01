@@ -1,38 +1,37 @@
 D			[0-9]
 L			[a-zA-Z_]
 
-% {
+%{
 
-    /*****************************************************************************/
-    /*                                                                           */
-    /*  CROBOTS                                                                  */
-    /*                                                                           */
-    /*  (C) Copyright Tom Poindexter, 1985, all rights reserved.                 */
-    /*                                                                           */
-    /*                                                                           */
-    /*****************************************************************************/
+/*****************************************************************************/
+/*                                                                           */
+/*  CROBOTS                                                                  */
+/*                                                                           */
+/*  (C) Copyright Tom Poindexter, 1985, all rights reserved.                 */
+/*                                                                           */
+/*                                                                           */
+/*****************************************************************************/
 
-    /* lexical analyzer for crobots */
+/* lexical analyzer for crobots */
 
 #include "tokens.h"
 #include "crobots.h"
 #include "compiler.h"
 
-    /* redefine i/o */
+/* redefine i/o */
 #undef 	crinput
 #define	crinput()  	lexgetc()
 #undef 	unput
 #define	unput(c) 	lexungetc(c)
-#undef 	output
+#undef 	output   
 #define output(c)	lexputc(c)
 #undef ECHO
 #define ECHO fprintf(f_out,"%s",yytext)
 
-    long atol();
-    int count();
+long atol();
+int count();
 
-    %
-}
+%}
 
 %%
 "/*"			{ comment(); }
@@ -49,16 +48,14 @@ L			[a-zA-Z_]
 "return"		{ count(); return(RETURN); }
 "while"			{ count(); return(WHILE); }
 
-{L}({L}| {D})*		{ count();
-    strncpy(last_ident,yytext,ILEN-1);
-    last_ident[ILEN-1] = '\0';
-    return(IDENTIFIER);
-}
+{L}({L}|{D})*		{ count(); 
+				strncpy(last_ident,yytext,ILEN-1);
+				last_ident[ILEN-1] = '\0';
+				return(IDENTIFIER); }
 
-{D}+     		{ count();
-    kk = atol(yytext);
-    return(CONSTANT);
-}
+{D}+     		{ count(); 
+				kk = atol(yytext);
+				return(CONSTANT); }
 
 ">>="			{ count(); return(RIGHT_ASSIGN); }
 "<<="			{ count(); return(LEFT_ASSIGN); }
@@ -108,46 +105,46 @@ L			[a-zA-Z_]
 
 yywrap()
 {
-    return(1);
+	return(1);
 }
 
 comment()
 {
-    char c, c1;
+	char c, c1;
 
-    output('/');
-    output('*');
+	output('/');
+	output('*');
 
 loop:
-    while ((c = input()) != '*' && c != 0)
-        output(c);
+	while ((c = input()) != '*' && c != 0)
+		output(c);
 
-    if ((c1 = input()) != '/' && c != 0)
-    {
-        unput(c1);
-        goto loop;
-    }
+	if ((c1 = input()) != '/' && c != 0)
+	{
+		unput(c1);
+		goto loop;
+	}
 
-    if (c != 0) {
-        output('*');
-        output(c1);
-    }
+	if (c != 0) {
+		output('*');
+		output(c1);
+	}
 }
 
 
 count()
 {
-    int i;
+	int i;
 
-    for (i = 0; yytext[i] != '\0'; i++)
-        if (yytext[i] == '\n')
-            column = 0;
-        else if (yytext[i] == '\t')
-            column += 8 - (column % 8);
-        else
-            column++;
+	for (i = 0; yytext[i] != '\0'; i++)
+		if (yytext[i] == '\n')
+			column = 0;
+		else if (yytext[i] == '\t')
+			column += 8 - (column % 8);
+		else
+			column++;
 
-    ECHO;
+	ECHO;
 }
 
 
@@ -155,25 +152,25 @@ count()
 
 int lexgetc()
 {
-    int c;
-    c = fgetc(f_in);
-    return ((c == EOF) ? 0 : c);
+  int c;
+  c = fgetc(f_in);
+  return ((c == EOF) ? 0 : c);
 }
 
 lexungetc(c)
 int c;
 {
-    ungetc(c,f_in);
+  ungetc(c,f_in);
 }
 
 lexputc(c)
 int c;
 {
-    fputc(c,f_out);
+  fputc(c,f_out);
 }
 
 /* these two dummy routines for lex's debug options */
 allprint() {}
 
-sprint() {}
+sprint() {} 
 
