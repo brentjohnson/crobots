@@ -12,6 +12,7 @@
 /* display.c - high level display routines */
 
 #include "crobots.h"
+#include "screen.h"
 
 
 /* update_disp - update all robots and missiles */

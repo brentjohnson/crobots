@@ -27,7 +27,7 @@ main.o: 	crobots.h main.c
 		cc $(CFLAGS) -c main.c
 
 grammar.o: 	crobots.h compiler.h grammar.y
-		yacc -d grammar.y
+		yacc -y -d grammar.y
 		egrep -v '# line|^#$$' y.tab.c >grammar.c
 		rm y.tab.c
 		mv y.tab.h tokens.h

@@ -46,7 +46,7 @@ void match(int, long, char **, int);
 void rand_pos(int);
 void trace(char *);
 void free_robot(int);
-void yyparse();
+int yyparse();
 
 int main(int argc, char **argv)
 {

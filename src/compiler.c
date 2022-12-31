@@ -12,6 +12,8 @@
 /* compiler.c - compiler routines in support of grammar.c */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "crobots.h"
 /* EXT causes externals to be declared without extern keyword in compiler.h */
@@ -19,6 +21,10 @@
 #define EXT 1
 #include "compiler.h"
 #include "tokens.h"
+
+void decompile(struct instr *);
+void printop(int);
+
 
 /* yyerror - simple error message on parser failure */
 
@@ -196,7 +202,7 @@ int reset_comp()
 
 /* new_func - reset the compiler for a new function within the same file */
 
-new_func()
+int new_func()
 {
     register int i;
 
@@ -230,7 +236,7 @@ new_func()
 
 /* end_func - cleanup the end of a function */
 
-end_func()
+int end_func()
 {
     register int i;
 
@@ -264,10 +270,7 @@ end_func()
 
 /* allocvar - allocates a variable in a pool, returns offset */
 
-allocvar(s,pool)
-
-char s[];
-char *pool;
+int allocvar(char s[], char *pool)
 {
     register int i;
 
@@ -288,10 +291,7 @@ char *pool;
 
 /* findvar - returns offset of variable in a pool */
 
-findvar(s,pool)
-
-char s[];
-char *pool;
+int findvar(char s[], char *pool)
 {
     register int i;
 
@@ -306,11 +306,7 @@ char *pool;
 
 /* stackid - stacks an identifier, note pointer to stack offset */
 
-stackid(id,stack,ptr)
-
-char id[];
-char *stack;
-int *ptr;
+int stackid(char id[], char *stack, int *ptr)
 {
     if (*ptr < MAXSYM - 1) {
         (*ptr)++;				/* the ptr itself is incremented */
@@ -327,11 +323,7 @@ int *ptr;
 
 /* popid - unstacks an identifier, note pointer to stack offset */
 
-popid(id,stack,ptr)
-
-char id[];
-char *stack;
-int *ptr;
+int popid(char id[], char *stack, int *ptr)
 {
     if (*ptr > 0) {
         strcpy(id,stack + (*ptr * ILEN));
@@ -350,9 +342,7 @@ int *ptr;
 
 /* poolsize - returns the size of a pool */
 
-poolsize(pool)
-
-char *pool;
+int poolsize(char *pool)
 {
     register int i;
 
@@ -371,10 +361,7 @@ char *pool;
 
 /* dumpoff - print a table of names and offsets in a symbol pool */
 
-void
-dumpoff(pool)
-
-char *pool;
+void dumpoff(char *pool)
 {
     register int i;
     int count = 0;
@@ -395,9 +382,7 @@ char *pool;
 
 /* efetch - emit a fetch instruction */
 
-efetch(offset)
-
-int offset;
+int efetch(int offset)
 {
     if (++num_instr == CODESPACE) {
         r_flag = 1;
@@ -414,10 +399,7 @@ int offset;
 
 /* estore - emit a store instruction */
 
-estore(offset, operator)
-
-int offset;
-int operator;
+int estore(int offset, int operator)
 {
     if (++num_instr == CODESPACE) {
         r_flag = 1;
@@ -435,9 +417,7 @@ int operator;
 
 /* econst - emit a constant instruction */
 
-econst(c)
-
-long c;
+int econst(long c)
 {
     if (++num_instr == CODESPACE) {
         r_flag = 1;
@@ -453,9 +433,7 @@ long c;
 
 /* ebinop - emit a binop instruction */
 
-ebinop(c)
-
-int c;
+int ebinop(int c)
 {
     if (++num_instr == CODESPACE) {
         r_flag = 1;
@@ -472,9 +450,7 @@ int c;
 
 /* efcall - emit a fcall instruction */
 
-efcall (c)
-
-int c;
+int efcall (int c)
 {
     if (++num_instr == CODESPACE) {
         r_flag = 1;
@@ -491,8 +467,7 @@ int c;
 
 /* eretsub - emit a retsub instruction */
 
-eretsub()
-
+int eretsub()
 {
     if (++num_instr == CODESPACE) {
         r_flag = 1;
@@ -508,8 +483,7 @@ eretsub()
 
 /* ebranch - emit a  branch instruction */
 
-ebranch()
-
+int ebranch()
 {
     if (++num_instr == CODESPACE) {
         r_flag = 1;
@@ -526,8 +500,7 @@ ebranch()
 
 /* echop - emit a chop instruction */
 
-echop()
-
+int echop()
 {
     if (++num_instr == CODESPACE) {
         r_flag = 1;
@@ -543,8 +516,7 @@ echop()
 
 /* eframe - emit a stack frame instruction */
 
-eframe()
-
+int eframe()
 {
     if (++num_instr == CODESPACE) {
         r_flag = 1;
@@ -560,8 +532,7 @@ eframe()
 
 /* new_if - start a nest for an if statement */
 
-new_if()
-
+int new_if()
 {
     if (if_nest == NESTLEVEL) {
         fprintf(f_out,"\n** Error ** 'if' nest level exceeded\n");
@@ -585,8 +556,7 @@ new_if()
 
 /* else_part - the else part of an if-then-else */
 
-else_part()
-
+int else_part()
 {
     /* setup a unconditional branch around the else part */
     if (!econst(0L))
@@ -608,8 +578,7 @@ else_part()
 
 /* close_if - close out an if nest */
 
-close_if()
-
+int close_if()
 {
     /* fix the not-else branch saved in else_part() */
     (ifs + if_nest)->fix_true->u.br = instruct;
@@ -620,8 +589,7 @@ close_if()
 
 /* new_while - start a nest for a new while statement */
 
-new_while()
-
+int new_while()
 {
     if (while_nest == NESTLEVEL) {
         fprintf(f_out,"\n** Error ** 'while' nest level exceeded\n");
@@ -641,8 +609,7 @@ new_while()
 
 /* while_expr - while expression loop fix */
 
-while_expr()
-
+int while_expr()
 {
     if (!ebranch())
         return (0);
@@ -657,8 +624,7 @@ while_expr()
 
 /* close_while - close out the while nest */
 
-close_while()
-
+int close_while()
 {
     /* emit an unconditional branch */
     if (!econst(0L))
@@ -681,9 +647,7 @@ close_while()
 
 /* decompile - print machine code */
 
-decompile(code)
-
-struct instr *code;
+void decompile(struct instr *code)
 {
 
     while (code->ins_type != NOP) {
@@ -696,10 +660,7 @@ struct instr *code;
 
 /* decinstr - print one instruct; watch out for pointer to long conversion! */
 
-void
-decinstr(code)
-
-struct instr *code;
+void decinstr(struct instr *code)
 {
 
     fprintf(f_out,"%8ld : ",(long) code);	/* this could be flakey */
@@ -751,9 +712,7 @@ struct instr *code;
 
 /* printop - print a binary operation code */
 
-printop(op)
-
-int op;
+void printop(int op)
 {
 
     switch (op) {

@@ -29,7 +29,11 @@ L			[a-zA-Z_]
 #define ECHO fprintf(f_out,"%s",yytext)
 
 long atol();
-int count();
+void count();
+void comment();
+void lexungetc(int);
+void lexputc(int);
+
 
 %}
 
@@ -108,7 +112,7 @@ yywrap()
 	return(1);
 }
 
-comment()
+void comment()
 {
 	char c, c1;
 
@@ -132,7 +136,7 @@ loop:
 }
 
 
-count()
+void count()
 {
 	int i;
 
@@ -157,14 +161,12 @@ int lexgetc()
   return ((c == EOF) ? 0 : c);
 }
 
-lexungetc(c)
-int c;
+void lexungetc(int c)
 {
   ungetc(c,f_in);
 }
 
-lexputc(c)
-int c;
+void lexputc(int c)
 {
   fputc(c,f_out);
 }

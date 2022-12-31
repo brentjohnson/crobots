@@ -11,8 +11,14 @@
 /*****************************************************************************/
 
 #include <stdio.h>
+#include <string.h>
 #include "crobots.h"
 #include "compiler.h"
+
+static int yyparse (void);
+static int yylex (void);
+static int yyerror(const char * s);
+
 
 %}
 

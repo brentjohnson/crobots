@@ -98,6 +98,28 @@ void decinstr(struct instr *);
 void init_comp();
 int reset_comp();
 
+int findvar(char [], char *);
+int allocvar(char [], char *);
+int efetch(int);
+int econst(long);
+int popid(char [], char *, int *);
+int efcall (int);
+int estore(int, int);
+int stackid(char [], char *, int *);
+int ebinop(int);
+int eframe();
+int echop();
+int new_func();
+int end_func();
+int poolsize(char *);
+int eretsub();
+int ebranch();
+int new_if();
+int else_part();
+int close_if();
+int new_while();
+int while_expr();
+int close_while();
 
 
 /* end of compiler.h */
