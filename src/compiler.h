@@ -95,9 +95,30 @@ struct func *new;	/* current function header */
 
 void dumpoff(char *);
 void decinstr(struct instr *);
-void init_comp();
-int reset_comp();
+void init_comp(void);
+int reset_comp(void);
 
-
+/* compiler.c routines called from grammar.y's semantic actions */
+void yyerror(const char *s);
+int new_func(void);
+void end_func(void);
+int allocvar(char *s, char *pool);
+int findvar(char *s, char *pool);
+int stackid(char *id, char *stack, int *ptr);
+int popid(char *id, char *stack, int *ptr);
+int efetch(int offset);
+int estore(int offset, int operator);
+int econst(long c);
+int ebinop(int c);
+int efcall(int c);
+int eretsub(void);
+int echop(void);
+int eframe(void);
+int new_if(void);
+int else_part(void);
+void close_if(void);
+int new_while(void);
+int while_expr(void);
+int close_while(void);
 
 /* end of compiler.h */

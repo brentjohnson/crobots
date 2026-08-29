@@ -38,7 +38,7 @@ long push(long k)
 /* pop - basic stack pop mechanism */
 /*         depends on cur_robot, set r_flag on overflow */
 
-long pop()
+long pop(void)
 {
     long v;
     if (cur_robot->stackptr == cur_robot->stackbase) {
@@ -57,7 +57,7 @@ long pop()
 /* any errors (stack collision, missing functions, etc) cause the 'main' */
 /* function to be restarted, with a clean stack; signal by r_flag = 1 */
 
-void cycle()
+void cycle(void)
 {
     int j;
     int c;
@@ -79,7 +79,11 @@ void cycle()
     case FETCH:		/* push a value from a variable pool */
 
         if (cur_instr->u.var1 & EXTERNAL)
-            push(*(cur_robot->external + (cur_instr->u.var1 & ~EXTERNAL)));
+            /* var1 is a signed short; with the EXTERNAL flag bit set it is  */
+            /* negative, and sign-extension to int would pollute bits above */
+            /* bit 15 before the ~EXTERNAL mask can clear just that bit --  */
+            /* widen through unsigned short first so it zero-extends instead */
+            push(*(cur_robot->external + ((unsigned short) cur_instr->u.var1 & ~EXTERNAL)));
         else
             push(*(cur_robot->local + cur_instr->u.var1));
         cur_robot->ip++;
@@ -90,7 +94,8 @@ void cycle()
 
         binaryop(cur_instr->u.a.a_op);	/* perform assignment operation */
         if (cur_instr->u.a.var2 & EXTERNAL)
-            *(cur_robot->external +(cur_instr->u.a.var2 & ~EXTERNAL)) = push(pop());
+            /* see the widening comment on the FETCH case above */
+            *(cur_robot->external +((unsigned short) cur_instr->u.a.var2 & ~EXTERNAL)) = push(pop());
         else
             *(cur_robot->local + cur_instr->u.var1) = push(pop());
         cur_robot->ip++;
@@ -482,8 +487,11 @@ void binaryop(int op)
 
 
 /* robot_go - start the robot pointed to by r */
+/*            returns 1 if a "main" function was found and the robot was */
+/*            armed to run, 0 otherwise (caller must not mark it ACTIVE, */
+/*            or cycle() will dereference a NULL instruction pointer)    */
 
-void robot_go(struct robot *r)
+int robot_go(struct robot *r)
 {
     register struct func *f;
     register int i;
@@ -498,9 +506,10 @@ void robot_go(struct robot *r)
                 *(r->local + i) = 0L;
             r->stackptr = r->local + f->var_count;	/* set stack after locals */
             r->retptr = r->stackend;			/* return stack starts at end*/
-            break;
+            return 1;
         }
     }
+    return 0;
 }
 
 

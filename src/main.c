@@ -46,7 +46,7 @@ void match(int, long, char **, int);
 void rand_pos(int);
 void trace(char *);
 void free_robot(int);
-void yyparse();
+int yyparse(void);
 
 int main(int argc, char **argv)
 {
@@ -243,7 +243,6 @@ void play(char **f, int n)
     int i, j, k;
     long c = 0L;
     char *s;
-    char *strrchr();  /* this is rindex in some implementations */
 
     f_out = stdout;
     r_debug = 0;  /* turns off full compile info */
@@ -279,8 +278,12 @@ void play(char **f, int n)
             if (s == (char *) NULL)
                 s = f[i];
             strcpy(robots[num_robots].name,s);
-            robot_go(&robots[num_robots]);
-            num_robots++;
+            if (robot_go(&robots[num_robots])) {
+                num_robots++;
+            } else {
+                fprintf(stdout,"\n %s: no main function\n",f[i]);
+                free_robot(num_robots);
+            }
         }
         fprintf(stdout,"\n\nPress <enter> to continue.\n");
         getchar();
@@ -385,7 +388,6 @@ void match(int m, long l, char **f, int n)
     int ties[MAXROBOTS];
     long c;
     char *s;
-    char *strrchr();  /* this is rindex in some implementations */
 
 #ifdef UNIX
     f_out = fopen("/dev/null","w");
@@ -406,6 +408,7 @@ void match(int m, long l, char **f, int n)
 
         /* compile the robot */
         init_comp();
+        yyin = f_in;
         yyparse();
         reset_comp();
         fclose(f_in);
@@ -442,8 +445,14 @@ void match(int m, long l, char **f, int n)
         printf("\nMatch %6d: ",m_count);
         for (i = 0; i < num_robots; i++) {
             init_robot(i);
-            robot_go(&robots[i]);
-            robots[i].status = ACTIVE;
+            /* robot_go() re-arms this robot's VM state for a fresh match;   */
+            /* it was already verified to compile with a "main" function    */
+            /* above, so failure here would be a compiler/VM inconsistency  */
+            if (robot_go(&robots[i]))
+                robots[i].status = ACTIVE;
+            else
+                fprintf(stderr,"\n %s: no main function, sitting out\n",
+                        robots[i].name);
         }
         rand_pos(num_robots);
         movement = MOTION_CYCLES;
@@ -587,6 +596,7 @@ void trace(char *f)
     r_flag = 0;
     cur_robot = &robots[0];
     init_comp();
+    yyin = f_in;
     yyparse();
     reset_comp();
 
@@ -595,8 +605,10 @@ void trace(char *f)
         fprintf(stderr," %s could not compile\n",f);
         exit(1);
     }
-    else
-        robot_go(&robots[0]);
+    else if (!robot_go(&robots[0])) {
+        fprintf(stderr," %s: no main function\n",f);
+        exit(1);
+    }
 
     /* randomly place robot */
     robots[0].x = rand() % MAX_X * 100;
@@ -693,6 +705,7 @@ void free_robot(int i)
 void catch_int(int s)
 {
     int i;
+    (void) s;	/* signal number unused */
      for (i = 0; i < MAXROBOTS; i++) {
         cur_robot = &robots[i];
           printf("\nrobot: %d",i);

@@ -1,0 +1,6 @@
+crobots
+*.o
+*.d
+src/grammar.c
+src/lexanal.c
+src/tokens.h

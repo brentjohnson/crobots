@@ -158,19 +158,21 @@ int r_debug,			/* debug switch */
 
 /* declare the intrinsic functions, all must push a long value on the stack */
 /* these functions don't return a long, but declared long for notation */
-long c_scan();    /* scan(degree,res);  >0 = robot distance, 0 = nothing */
-long c_cannon();  /* cannon(degree,dist); fire cannon */
-long c_drive();   /* drive(degree,speed); speed 0-100 in % */
-long c_damage();  /* damage(); = current damage in % */
-long c_speed();   /* speed(); = current speed */
-long c_loc_x();   /* loc_x(); = current x location */
-long c_loc_y();   /* loc_y(); = current y location */
-long c_rand();    /* rand(limit); = 0 -- limit (2**15)-1 */
-long c_sin();     /* sin(degree); = sin * 100000 */
-long c_cos();     /* cos(degree); = cos * 100000 */
-long c_tan();     /* tan(degree); = tan * 100000 */
-long c_atan();    /* atan(ratio); = degree */
-long c_sqrt();    /* sqrt(x); = square root */
+/* all intrinsics take no C arguments: they pop their own operands off  */
+/* the robot's VM stack (see cpu.c's FCALL dispatch), hence (void) here */
+long c_scan(void);    /* scan(degree,res);  >0 = robot distance, 0 = nothing */
+long c_cannon(void);  /* cannon(degree,dist); fire cannon */
+long c_drive(void);   /* drive(degree,speed); speed 0-100 in % */
+long c_damage(void);  /* damage(); = current damage in % */
+long c_speed(void);   /* speed(); = current speed */
+long c_loc_x(void);   /* loc_x(); = current x location */
+long c_loc_y(void);   /* loc_y(); = current y location */
+long c_rand(void);    /* rand(limit); = 0 -- limit (2**15)-1 */
+long c_sin(void);     /* sin(degree); = sin * 100000 */
+long c_cos(void);     /* cos(degree); = cos * 100000 */
+long c_tan(void);     /* tan(degree); = tan * 100000 */
+long c_atan(void);    /* atan(ratio); = degree */
+long c_sqrt(void);    /* sqrt(x); = square root */
 
 /* declare instrinsic function table */
 #ifndef INIT
@@ -178,12 +180,12 @@ extern
 #endif
 struct intrin {
     char *n;
-    long (*f)();
+    long (*f)(void);
 } intrinsics[20]
 
 #ifdef INIT
 = {
-    {"*dummy*",	(long (*)()) 0},
+    {"*dummy*",	(long (*)(void)) 0},
     {"scan",	c_scan},
     {"cannon",	c_cannon},
     {"drive",	c_drive},
@@ -197,22 +199,34 @@ struct intrin {
     {"tan",	c_tan},
     {"atan",	c_atan},
     {"sqrt",	c_sqrt},
-    {"",		(long (*)()) 0}
+    {"",		(long (*)(void)) 0}
 }
 #endif
 ;
 
-void cycle();
-void robot_go(struct robot *);
+/* VM stack primitives (cpu.c) */
+long push(long);
+long pop(void);
+
+void cycle(void);
+int robot_go(struct robot *);	/* returns 1 if a "main" function was found, else 0 */
 void move_miss(int);
 void move_robots(int);
-void update_disp();
-void init_disp();
-void end_disp();
+void update_disp(void);
+void init_disp(void);
+void end_disp(void);
 void show_cycle(long);
 void count_miss(int, int);
 void robot_stat(int);
 long lcos(int);
 long lsin(int);
+
+/* display backend (screen.c on Unix; screend.c/screena.c on DOS, not   */
+/* built here -- those still use K&R definitions and are not guaranteed */
+/* to match these prototypes if ever compiled) */
+void draw_field(void);
+void plot_robot(int n);
+void plot_miss(int r, int n);
+void plot_exp(int r, int n);
 
 /* end of crobots.h header */

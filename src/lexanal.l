@@ -14,24 +14,22 @@ L			[a-zA-Z_]
 
 /* lexical analyzer for crobots */
 
+#include <stdlib.h>
+#include <string.h>
 #include "tokens.h"
 #include "crobots.h"
 #include "compiler.h"
 
-/* redefine i/o */
-#undef 	crinput
-#define	crinput()  	lexgetc()
-#undef 	unput
-#define	unput(c) 	lexungetc(c)
-#undef 	output   
-#define output(c)	lexputc(c)
+/* echo recognized tokens to the compiler diagnostic file, not stdout */
 #undef ECHO
 #define ECHO fprintf(f_out,"%s",yytext)
 
-long atol();
-int count();
+static void comment(void);
+static void count(void);
 
 %}
+
+%option noyywrap nodefault
 
 %%
 "/*"			{ comment(); }
@@ -103,21 +101,21 @@ int count();
 
 %%
 
-yywrap()
-{
-	return(1);
-}
+/* comment - consume a /* .. *\/ comment, echoing it via flex's own       */
+/*           input()/unput() (buffered off yyin, unlike the raw stdio    */
+/*           f_in/f_out pushback this used to do, which could desync     */
+/*           from flex's internal read buffer)                          */
 
-comment()
+static void comment(void)
 {
-	char c, c1;
+	int c, c1;
 
-	output('/');
-	output('*');
+	fputc('/', f_out);
+	fputc('*', f_out);
 
 loop:
 	while ((c = input()) != '*' && c != 0)
-		output(c);
+		fputc(c, f_out);
 
 	if ((c1 = input()) != '/' && c != 0)
 	{
@@ -126,13 +124,13 @@ loop:
 	}
 
 	if (c != 0) {
-		output('*');
-		output(c1);
+		fputc('*', f_out);
+		fputc(c1, f_out);
 	}
 }
 
 
-count()
+static void count(void)
 {
 	int i;
 
@@ -146,31 +144,4 @@ count()
 
 	ECHO;
 }
-
-
-/* the i/o routines depend on f_in and f_out to be opened elsewhere */
-
-int lexgetc()
-{
-  int c;
-  c = fgetc(f_in);
-  return ((c == EOF) ? 0 : c);
-}
-
-lexungetc(c)
-int c;
-{
-  ungetc(c,f_in);
-}
-
-lexputc(c)
-int c;
-{
-  fputc(c,f_out);
-}
-
-/* these two dummy routines for lex's debug options */
-allprint() {}
-
-sprint() {} 
 

@@ -15,12 +15,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "crobots.h"
-#include "math.h"
-
-/* stack routines in cpu.c */
-extern long push();
-extern long pop();
 
 /* radian to degrees conversion factor */
 #define RAD_DEG 57.29578
@@ -35,7 +31,7 @@ extern long pop();
 /* c_scan - radar scanning function - note degrees instead of radians */
 /*          expects two agruments on stack, degree and resoultion */
 
-long c_scan()
+long c_scan(void)
 {
     register int i;
     long degree;
@@ -117,7 +113,7 @@ long c_scan()
 /* c_cannon - fire a shot */
 /*            expects two agruments on stack, degree distance */
 
-long c_cannon()
+long c_cannon(void)
 {
     long degree;
     long distance;
@@ -180,7 +176,7 @@ long c_cannon()
 /* c_drive - start the propulsion system */
 /*           expect two agruments, degrees & speed */
 
-long c_drive()
+long c_drive(void)
 {
     long degree;
     long speed;
@@ -209,7 +205,7 @@ long c_drive()
 
 /* c_damage - report on damage sustained */
 
-long c_damage()
+long c_damage(void)
 {
     return push((long) cur_robot->damage);
 }
@@ -217,7 +213,7 @@ long c_damage()
 
 /* c_speed - report current speed */
 
-long c_speed()
+long c_speed(void)
 {
     return push((long) cur_robot->speed);
 }
@@ -225,7 +221,7 @@ long c_speed()
 
 /* c_loc_x - report current x location */
 
-long c_loc_x()
+long c_loc_x(void)
 {
     return push((long) cur_robot->x / CLICK);
 }
@@ -233,7 +229,7 @@ long c_loc_x()
 
 /* c_loc_y - report current y location */
 
-long c_loc_y()
+long c_loc_y(void)
 {
     return push((long) cur_robot->y / CLICK);
 }
@@ -242,14 +238,15 @@ long c_loc_y()
 /* c_rand - return a random number between 0 and limit */
 /*          expect one argument, limit */
 
-long c_rand()
+long c_rand(void)
 {
     long limit;
 
     limit = pop();
 
+    /* limit <= 0 means no range to choose from; avoid "rand() % 0" (SIGFPE) */
     if (limit <= 0L)
-        limit = 0L;
+        return push(0L);
 
     return push((long)(rand() % limit));
 }
@@ -258,7 +255,7 @@ long c_rand()
 /* c_sin - return sin(degrees) * SCALE */
 /*         expect one agrument, degrees */
 
-long c_sin()
+long c_sin(void)
 {
     long degree;
 
@@ -272,7 +269,7 @@ long c_sin()
 /* c_cos - return cos(degrees) * SCALE */
 /*         expect one agrument, degrees */
 
-long c_cos()
+long c_cos(void)
 {
     long degree;
 
@@ -286,7 +283,7 @@ long c_cos()
 /* c_tan - return tan(degrees) * SCALE */
 /*         expect one agrument, degrees */
 
-long c_tan()
+long c_tan(void)
 {
     long degree;
 
@@ -300,7 +297,7 @@ long c_tan()
 /* c_atan - return atan(x) */
 /*          expect one agrument, ratio * SCALE */
 
-long c_atan()
+long c_atan(void)
 {
     long degree;
     long ratio;
@@ -315,7 +312,7 @@ long c_atan()
 /* c_sqrt - return sqrt(x) */
 /*          expect one agrument, x */
 
-long c_sqrt()
+long c_sqrt(void)
 {
     long x;
 

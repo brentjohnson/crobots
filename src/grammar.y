@@ -11,10 +11,16 @@
 /*****************************************************************************/
 
 #include <stdio.h>
+#include <string.h>
 #include "crobots.h"
 #include "compiler.h"
 
+int yylex(void);
+
 %}
+
+/* one known shift/reduce conflict: dangling-else, resolved by shift (correct) */
+%expect 1
 
 %token IDENTIFIER 
 %token CONSTANT 

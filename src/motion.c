@@ -182,7 +182,6 @@ struct {
 void move_robots(int displ)
 {
     register int i, n;
-    long lsin(), lcos();
 
     for (i = 0; i < MAXROBOTS; i++) {
         if (robots[i].status == DEAD)
