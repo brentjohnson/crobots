@@ -554,25 +554,25 @@ void match(int m, long l, char **f, int n)
 
 void rand_pos(int n)
 {
-    int i, k;
-    int quad[4];
+    int i, j, k, t;
+    int quad[4] = {0, 1, 2, 3};
 
-    for (i = 0; i < 4; i++) {
-        quad[i] = 0;
+    /* fisher-yates shuffle: gives a uniformly random permutation of the four  */
+    /* quadrants, so which quadrant a robot lands in is independent of its    */
+    /* command-line order. the old scheme (random pick, then linear-probe    */
+    /* forward on collision) always resolved collisions in the same          */
+    /* direction, which biased later robots toward the quadrant following an */
+    /* earlier robot's -- a real, measurable win-rate skew tied to argument  */
+    /* position since the four quadrants aren't symmetric under that order.  */
+    for (i = 3; i > 0; i--) {
+        j = rand() % (i + 1);
+        t = quad[i];
+        quad[i] = quad[j];
+        quad[j] = t;
     }
 
-    /* get a new quadrant */
     for (i = 0; i < n; i++) {
-        k = rand() % 4;
-        if (quad[k] == 0)
-            quad[k] = 1;
-        else {
-            while (quad[k] != 0) {
-                if (++k == 4)
-                    k = 0;
-            }
-            quad[k] = 1;
-        }
+        k = quad[i];
         robots[i].org_x = robots[i].x =
                               (rand() % (MAX_X * CLICK / 2)) + ((MAX_X * CLICK / 2) * (k%2));
         robots[i].org_y = robots[i].y =
